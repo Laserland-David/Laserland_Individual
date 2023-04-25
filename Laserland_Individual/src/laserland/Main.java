@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -13,20 +14,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-import javax.swing.JFileChooser;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-import java.io.FileWriter; 
+import java.util.stream.Collectors; 
 
 public class Main {
 
 	public static void main(String[] args) {
-		String pathToWatch = null;
+		String pathToWatch = "/Users/david/Desktop/LaserballFiles/LaserballStats";
 		
-		try {
+		/**try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
@@ -39,7 +34,7 @@ public class Main {
 	        int returnVal = chooser.showOpenDialog(null);
 	        if(returnVal == JFileChooser.APPROVE_OPTION) {
 	        	pathToWatch = chooser.getSelectedFile().getAbsolutePath();
-	        }
+	        } */
 	        
 		//		Map<Integer,Integer> mapTeamIndex = new HashMap<Integer, Integer>();
 		Map<String,Player> mapPlayer = new HashMap<String, Player>();
