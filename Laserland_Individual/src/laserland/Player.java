@@ -18,17 +18,27 @@ public class Player {
 
 	//Laserball
 	private int goals;
-  	private int passes;
+
+	private int passes;
 	private int steals;
 	private int blocks;
 	private int clear;
 	private int anzahlSpieleLaserball;
+	private int assists;
 
 	private Map<String,Integer> score; //= new HashMap<String, Integer>();
 	
 
 	public Player(){
 		//leer
+	}
+	
+  	public int getAssists() {
+		return assists;
+	}
+
+	public void setAssists(int assists) {
+		this.assists = assists;
 	}
 	
 	public int getAnzahlSpieleLaserball() {
