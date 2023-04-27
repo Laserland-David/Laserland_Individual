@@ -19,8 +19,9 @@ import java.util.stream.Collectors;
 public class Main {
 
 	public static void main(String[] args) {
-		//MAC String pathToWatch = "/Users/david/Desktop/LaserballFiles/LaserballStats"; 
-		String pathToWatch = "C:\\LL_Bautzen\\Programming\\Files"; 
+		//String pathToWatch = "/Users/david/Desktop/LaserballFiles/LaserballStats"; 
+		String pathToWatch = "/Users/david/Desktop/LaserballFiles/LaserballStats/EinzelErgebnis";
+		//String pathToWatch = "C:\\LL_Bautzen\\Programming\\Files"; 
 		
 		/**try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -48,6 +49,8 @@ public class Main {
 		boolean laserball = false;
 		int countNormalFiles = 0;
 		int countLaserballFiles = 0;
+		double holdingBallTimeStart;
+		double holdingBallTimeEnde;
 		//String lastPassOrCLearPlayerObjectID = "";
 		
 		File folder = new File(pathToWatch);
@@ -60,7 +63,10 @@ public class Main {
 			}
 			
 			System.out.println(file.getAbsolutePath());
+			
 			lastPassOrCLearPlayerObjectID.clear();
+			holdingBallTimeStart = 0;
+			holdingBallTimeEnde = 0;
 			try {
 				reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_16LE));
 				String line;
@@ -85,10 +91,11 @@ public class Main {
 							definePlayers(mapPlayer, line, laserball);
 						}
 
+						
 						if(start.startsWith("4") && laserball){
-							defineGameEventLaserball(mapPlayer, line,lastPassOrCLearPlayerObjectID);
+							holdingBallTimeStart = defineGameEventLaserball(mapPlayer, line,lastPassOrCLearPlayerObjectID,holdingBallTimeStart,holdingBallTimeEnde);
 						}
-
+						
 						if(start.startsWith("6")){
 							String[] splitted = line.split("\t");
 							String score = splitted[4].trim();
@@ -113,32 +120,6 @@ public class Main {
 							//defineScore(curLine,mapPlayer,teamScore);
 							//System.out.println(start);
 						}
-
-
-						//							if(gameEnd){
-						//								//Missionsende
-						//								reader.close();
-						//								System.out.println(mapPlayer.size());
-						//								return;
-						//							}
-
-
-						//					
-						//							if(start.startsWith("2")){
-						//								defineTeams(mapTeamIndex, curLine);
-						//							}
-						//
-						//							if(start.startsWith("3")){
-						//								definePlayers(mapTeamIndex, mapPlayer, curLine,apiClient);
-						//							}
-						//
-						//							if(start.startsWith("4")){
-						//								gameEnd = defineGameEvent(curLine,mapPlayer,teamScore,apiClient);
-						//							}
-						//
-						//							if(start.startsWith("5")){
-						//								defineScore(curLine,mapPlayer,teamScore);
-						//							}
 					}
 				}
 			} catch (FileNotFoundException e) {
@@ -208,6 +189,7 @@ public class Main {
 				String steals = "Steals: " + player.getSteals();
 				String blocks = "Blocks: " + player.getBlocks();
 				String clear = "Clears: " + player.getClear();
+				String ballHolding = "Ball Holding: " + player.getBallHoldingInMs() / 1000; 
 				String cutter = "---------------------------------------------------";
 
 				System.out.println(name);
@@ -218,6 +200,7 @@ public class Main {
 				System.out.println(steals);
 				System.out.println(blocks);
 				System.out.println(clear);
+				System.out.println(ballHolding);
 				System.out.println(cutter);
 
 
@@ -230,6 +213,7 @@ public class Main {
 				myWriterLaserball.write(steals+ "\n");
 				myWriterLaserball.write(blocks+ "\n");
 				myWriterLaserball.write(clear+ "\n");
+				myWriterLaserball.write(ballHolding+ "\n");
 				myWriterLaserball.write(cutter+ "\n");
 				
 
@@ -293,7 +277,7 @@ public class Main {
 				String name = "Name: " + mapPlayer.get(me2.getKey()).getName();
 				String games = "Anzahl Spiele: " + mapPlayer.get(me2.getKey()).getAnzahlSpiele();
 				String score = "Absoluter Score " + mapPlayer.get(me2.getKey()).getAbsoluteScore();
-				String average = "Durschnitt: " + mapPlayer.get(me2.getKey()).getDurschnitt();
+				String average = "Durchschnitt: " + mapPlayer.get(me2.getKey()).getDurschnitt();
 				String cutter = "---------------------------------------------------";
 				
 				System.out.println(games);
@@ -380,12 +364,22 @@ public class Main {
 		EventClear 1109
 	 * @param mapPlayer
 	 * @param curLine
+	 * @param holdingBallTimeEnde 
+	 * @param holdingBallTimeStart 
+	 * @return 
 	 */
-	private static void defineGameEventLaserball(Map<String, Player> mapPlayer,String curLine, Map<String, String> lastPassOrCLearPlayerObjectID) {
+	private static double defineGameEventLaserball(Map<String, Player> mapPlayer,String curLine, Map<String, String> lastPassOrCLearPlayerObjectID, double holdingBallTimeStart, double holdingBallTimeEnde) {
 		String[] splitted = curLine.split("\t");
-		String a1 = splitted[0].trim();
+		String ms = splitted[1].trim();
 		String gameEvent = splitted[2].trim(); //Player GameEvent
 		String ObjectID = splitted[3].trim(); //player,target etc
+		String recievedObjectID = "";
+		Double msDouble = Double.parseDouble(ms);
+		
+		if(splitted.length > 5) {
+			 recievedObjectID = splitted[5].trim();
+		}
+		
 		
 		if(ObjectID.startsWith("#") || ObjectID.startsWith("@")) {
 			Player player = null;
@@ -400,33 +394,58 @@ public class Main {
 			  case "1100": //passes
 				  player.setPasses(player.getPasses()+1);
 				  lastPassOrCLearPlayerObjectID.put("1", ObjectID);
+				  
+				  double difInMS = msDouble - holdingBallTimeStart;
+				  player.setBallHoldingInMs(player.getBallHoldingInMs() + difInMS);
+				  holdingBallTimeStart = msDouble;
+			//	  System.out.println("DIF:" + difInMS);
+				  //Player recPlayer = mapPlayer.get(recievedObjectID);
+				  
 			    break;
 			  case "1101":
 			    player.setGoals(player.getGoals()+1);
+			    player.setBallHoldingInMs(player.getBallHoldingInMs() + (msDouble - holdingBallTimeStart));
 			    if(!lastPassOrCLearPlayerObjectID.isEmpty()) {
 			    	//Assist
 			    	Player playerLastPass = mapPlayer.get(lastPassOrCLearPlayerObjectID.get("1"));
 			    	playerLastPass.setAssists(playerLastPass.getAssists()+1);
 			    	mapPlayer.put(playerLastPass.getUniqueID(), playerLastPass);
 			    }
-			    
+			    holdingBallTimeStart = 0;
 			    lastPassOrCLearPlayerObjectID.clear(); //After a goal = Team change -> no assist possible
 			    break;
 			  case "1103":
 				player.setSteals(player.getSteals()+1);
-				 lastPassOrCLearPlayerObjectID.clear(); //steal = Team change -> no assist possible
+				
+				
+				Player recievedPlayer = mapPlayer.get(recievedObjectID);
+				Double DifMsSteal = msDouble - holdingBallTimeStart;
+				
+				recievedPlayer.setBallHoldingInMs(recievedPlayer.getBallHoldingInMs() + DifMsSteal);
+				mapPlayer.put(recievedObjectID, recievedPlayer);
+				
+				holdingBallTimeStart = msDouble;
+				lastPassOrCLearPlayerObjectID.clear(); //steal = Team change -> no assist possible
 			    break;
 			  case "1104":
 			    player.setBlocks(player.getBlocks()+1);
 			    break;
+			  case "1107":
+				  holdingBallTimeStart = msDouble;
+				  break;
 			  case "1109":
 			    player.setClear(player.getClear()+1);
+			    double difMsClear = msDouble - holdingBallTimeStart;
+				player.setBallHoldingInMs(player.getBallHoldingInMs() + difMsClear);
+				
+				holdingBallTimeStart = msDouble;
 			    lastPassOrCLearPlayerObjectID.put("1", ObjectID);
 			    break;
 			}
 			
 			mapPlayer.put(ObjectID, player);
 		}
+		return holdingBallTimeStart;
 	}
 		
 	private static String defineGameID(String curLine) {

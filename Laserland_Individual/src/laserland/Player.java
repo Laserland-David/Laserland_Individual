@@ -25,6 +25,8 @@ public class Player {
 	private int clear;
 	private int anzahlSpieleLaserball;
 	private int assists;
+	double ballHoldingInMs;
+	
 
 	private Map<String,Integer> score; //= new HashMap<String, Integer>();
 	
@@ -160,5 +162,13 @@ public class Player {
 
 	public void setClear(int clear) {
 		this.clear = clear;
+	}
+	
+	public double getBallHoldingInMs() {
+		return ballHoldingInMs;
+	}
+
+	public void setBallHoldingInMs(double ballHoldingInMs) {
+		this.ballHoldingInMs = ballHoldingInMs;
 	}
 }
