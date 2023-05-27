@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class Main {
 
 	public static void main(String[] args) {
-		//MAC String pathToWatch = "/Users/david/Desktop/LaserballFiles/LaserballStats"; 
+		//MAC String pathToWatch = "/Users/david/Desktop/LaserballFiles/LaserballStats"; Das ist ein Test!
 		String pathToWatch = "C:\\LL_Bautzen\\Programming\\Files"; 
 		
 		/**try {
