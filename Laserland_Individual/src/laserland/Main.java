@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors; 
+import java.util.stream.Collectors;
+
+import javax.swing.text.StyledEditorKit.ForegroundAction; 
 
 public class Main {
 
@@ -226,7 +229,7 @@ public class Main {
 
 	private static void sortAndPrintAndWriteByNormalScore(Map<String, Player> mapPlayer, FileWriter myWriterNormal) throws IOException {
 		System.out.println("------------ SCORE NORMAL GAMES ------------");
-		myWriterNormal.write("------------ SCORE NORMAL GAMES ------------" + "\n");
+	//	myWriterNormal.write("------------ SCORE NORMAL GAMES ------------" + "\n");
 		
 		for (var entry : mapPlayer.entrySet()) {
 			//   System.out.println(entry.getKey() + "/" + entry.getValue());
@@ -279,19 +282,48 @@ public class Main {
 				String games = "Anzahl Spiele: " + mapPlayer.get(me2.getKey()).getAnzahlSpiele();
 				String score = "Absoluter Score " + mapPlayer.get(me2.getKey()).getAbsoluteScore();
 				String average = "Durchschnitt: " + mapPlayer.get(me2.getKey()).getDurschnitt();
+				
+				 Map<String,Integer> scorePlayer = mapPlayer.get(me2.getKey()).getScore();
+
 				String cutter = "---------------------------------------------------";
 				
 				System.out.println(games);
 				System.out.println(name);
 				System.out.println(score);
+				
+				 for (Map.Entry<String, Integer> entry : scorePlayer.entrySet()) {
+					   // System.out.println(entry.getKey() + "/" + entry.getValue());
+					 System.out.print(entry.getValue()+",");
+					}
+				
+				System.out.println();
+				 
 				System.out.println(average);
 				System.out.println(cutter);
 				
-				myWriterNormal.write(name + "\n");
-				myWriterNormal.write(games+ "\n");
-				myWriterNormal.write(score+ "\n");
-				myWriterNormal.write(average+ "\n");
-				myWriterNormal.write(cutter+ "\n");
+//				myWriterNormal.write(name + "\n");
+//				myWriterNormal.write(games+ "\n");
+//				
+//				 for (Map.Entry<String, Integer> entry : scorePlayer.entrySet()) {
+//					   // System.out.println(entry.getKey() + "/" + entry.getValue());
+//					 myWriterNormal.write(entry.getValue()+"\n");
+//					}
+//				 
+//				myWriterNormal.write(score+ "\n");
+//				myWriterNormal.write(average+ "\n");
+//				myWriterNormal.write(cutter+ "\n");
+				
+				myWriterNormal.write("\""+mapPlayer.get(me2.getKey()).getName()+"\""+",");
+				 for (Map.Entry<String, Integer> entry : scorePlayer.entrySet()) {
+					   // System.out.println(entry.getKey() + "/" + entry.getValue());
+					myWriterNormal.write(entry.getValue()+",");
+					}
+				 myWriterNormal.write(mapPlayer.get(me2.getKey()).getAbsoluteScore() + ",");
+				 myWriterNormal.write(""+mapPlayer.get(me2.getKey()).getDurschnitt());
+				 myWriterNormal.write("\n");
+				
+				
+				
 				
 			}
 
